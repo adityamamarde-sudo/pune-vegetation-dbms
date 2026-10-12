@@ -1,0 +1,23 @@
+# Core Web & UI Framework
+streamlit>=1.35.0
+streamlit-folium>=0.20.0
+folium>=0.16.0
+plotly>=5.20.0
+
+# Database & Driver
+mysql-connector-python>=8.4.0
+SQLAlchemy>=2.0.30
+PyMySQL>=1.1.0
+
+# Geospatial & Scientific Processing
+shapely>=2.0.4
+pyproj>=3.6.1
+pandas>=2.2.2
+numpy>=1.26.4
+
+# Google Earth Engine
+earthengine-api>=0.1.400
+
+# Environment & Testing
+python-dotenv>=1.0.1
+pytest>=8.2.0

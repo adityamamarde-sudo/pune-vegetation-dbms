@@ -1,0 +1,170 @@
+[
+  {
+    "area_name": "Pune City / Urban Core",
+    "area_type": "preset",
+    "region_label": "Pune Urban",
+    "centroid_lat": 18.520430,
+    "centroid_lon": 73.856744,
+    "area_sq_km": 250.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [73.780, 18.450],
+          [73.950, 18.450],
+          [73.950, 18.590],
+          [73.780, 18.590],
+          [73.780, 18.450]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Haveli Area",
+    "area_type": "preset",
+    "region_label": "Haveli",
+    "centroid_lat": 18.480000,
+    "centroid_lon": 73.910000,
+    "area_sq_km": 580.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [73.750, 18.350],
+          [74.050, 18.350],
+          [74.050, 18.600],
+          [73.750, 18.600],
+          [73.750, 18.350]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Mulshi Area",
+    "area_type": "preset",
+    "region_label": "Mulshi",
+    "centroid_lat": 18.510000,
+    "centroid_lon": 73.510000,
+    "area_sq_km": 620.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [73.380, 18.380],
+          [73.680, 18.380],
+          [73.680, 18.640],
+          [73.380, 18.640],
+          [73.380, 18.380]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Maval Area",
+    "area_type": "preset",
+    "region_label": "Maval",
+    "centroid_lat": 18.750000,
+    "centroid_lon": 73.580000,
+    "area_sq_km": 540.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [73.450, 18.650],
+          [73.750, 18.650],
+          [73.750, 18.880],
+          [73.450, 18.880],
+          [73.450, 18.650]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Bhor Area",
+    "area_type": "preset",
+    "region_label": "Bhor",
+    "centroid_lat": 18.150000,
+    "centroid_lon": 73.840000,
+    "area_sq_km": 690.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [73.700, 18.020],
+          [74.000, 18.020],
+          [74.000, 18.300],
+          [73.700, 18.300],
+          [73.700, 18.020]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Baramati Area",
+    "area_type": "preset",
+    "region_label": "Baramati",
+    "centroid_lat": 18.150000,
+    "centroid_lon": 74.580000,
+    "area_sq_km": 810.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [74.400, 18.000],
+          [74.780, 18.000],
+          [74.780, 18.300],
+          [74.400, 18.300],
+          [74.400, 18.000]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Shirur Area",
+    "area_type": "preset",
+    "region_label": "Shirur",
+    "centroid_lat": 18.820000,
+    "centroid_lon": 74.370000,
+    "area_sq_km": 750.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [74.200, 18.680],
+          [74.550, 18.680],
+          [74.550, 18.980],
+          [74.200, 18.980],
+          [74.200, 18.680]
+        ]
+      ]
+    }
+  },
+  {
+    "area_name": "Daund Area",
+    "area_type": "preset",
+    "region_label": "Daund",
+    "centroid_lat": 18.460000,
+    "centroid_lon": 74.580000,
+    "area_sq_km": 720.0,
+    "boundary_source": "Approximate study-area bounding polygon for Pune DBMS demonstration",
+    "geometry_geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [74.420, 18.320],
+          [74.760, 18.320],
+          [74.760, 18.620],
+          [74.420, 18.620],
+          [74.420, 18.320]
+        ]
+      ]
+    }
+  }
+]
