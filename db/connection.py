@@ -26,6 +26,11 @@ class DatabaseManager:
         If use_database is False, connects to the server without selecting a DB
         (useful for schema creation or initialization).
         """
+        # Enable SSL automatically if connecting to a remote cloud database (e.g. TiDB Cloud)
+        ssl_params = {}
+        if DatabaseConfig.HOST not in ("localhost", "127.0.0.1"):
+            ssl_params = {"ssl": {"ca": None}}
+
         return pymysql.connect(
             host=DatabaseConfig.HOST,
             port=DatabaseConfig.PORT,
@@ -36,6 +41,7 @@ class DatabaseManager:
             cursorclass=DictCursor,
             autocommit=False,
             connect_timeout=10,
+            **ssl_params,
         )
 
     @classmethod
