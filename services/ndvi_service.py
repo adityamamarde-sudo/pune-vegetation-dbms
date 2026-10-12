@@ -140,7 +140,10 @@ def generate_ndvi_raster_overlay(
     import base64
     from PIL import Image as PILImage
     from shapely.geometry import shape, Polygon, MultiPolygon
-    import matplotlib.path as mpath
+    try:
+        import matplotlib.path as mpath
+    except ImportError:
+        mpath = None
 
     try:
         import json
@@ -173,10 +176,13 @@ def generate_ndvi_raster_overlay(
             polys = [geom]
 
         inside_mask = np.zeros(len(pts_flat), dtype=bool)
-        for poly in polys:
-            ext_coords = list(poly.exterior.coords)
-            path = mpath.Path(ext_coords)
-            inside_mask |= path.contains_points(pts_flat)
+        if mpath is not None:
+            for poly in polys:
+                ext_coords = list(poly.exterior.coords)
+                path = mpath.Path(ext_coords)
+                inside_mask |= path.contains_points(pts_flat)
+        else:
+            inside_mask = np.ones(len(pts_flat), dtype=bool)
 
         mask_2d = inside_mask.reshape((grid_size, grid_size))
 
