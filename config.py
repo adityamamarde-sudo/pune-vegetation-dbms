@@ -18,6 +18,17 @@ else:
     # Also attempt standard load_dotenv() from CWD
     load_dotenv()
 
+# Streamlit Community Cloud secrets fallback
+try:
+    import streamlit as st
+    if hasattr(st, "secrets"):
+        for k, v in st.secrets.items():
+            if isinstance(v, (str, int, float, bool)):
+                os.environ.setdefault(k, str(v))
+except Exception:
+    pass
+
+
 
 class DatabaseConfig:
     """MySQL 8 Database configuration parameters."""
