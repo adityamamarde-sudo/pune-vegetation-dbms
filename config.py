@@ -18,31 +18,40 @@ else:
     # Also attempt standard load_dotenv() from CWD
     load_dotenv()
 
-# Streamlit Community Cloud secrets fallback
-try:
-    import streamlit as st
-    if hasattr(st, "secrets"):
-        for k, v in st.secrets.items():
-            if isinstance(v, (str, int, float, bool)):
-                os.environ.setdefault(k, str(v))
-except Exception:
-    pass
-
+def get_secret(key: str, default=None):
+    """Retrieves secret from st.secrets if running on Streamlit Cloud, else from env."""
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets") and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    return os.getenv(key, default)
 
 
 class DatabaseConfig:
     """MySQL 8 Database configuration parameters."""
-    HOST: str = os.getenv("DB_HOST", "localhost")
-    PORT: int = int(os.getenv("DB_PORT", "3306"))
-    NAME: str = os.getenv("DB_NAME", "pune_vegetation_db")
-    USER: str = os.getenv("DB_USER", "root")
-    PASSWORD: str = os.getenv("DB_PASSWORD", "")
-    POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", "5"))
-    POOL_NAME: str = os.getenv("DB_POOL_NAME", "pune_veg_pool")
+    HOST: str = str(get_secret("DB_HOST", "localhost"))
+    PORT: int = int(get_secret("DB_PORT", 3306))
+    NAME: str = str(get_secret("DB_NAME", "pune_vegetation_db"))
+    USER: str = str(get_secret("DB_USER", "root"))
+    PASSWORD: str = str(get_secret("DB_PASSWORD", ""))
+    POOL_SIZE: int = int(get_secret("DB_POOL_SIZE", 5))
+    POOL_NAME: str = str(get_secret("DB_POOL_NAME", "pune_veg_pool"))
+
+    @classmethod
+    def reload(cls):
+        cls.HOST = str(get_secret("DB_HOST", "localhost"))
+        cls.PORT = int(get_secret("DB_PORT", 3306))
+        cls.NAME = str(get_secret("DB_NAME", "pune_vegetation_db"))
+        cls.USER = str(get_secret("DB_USER", "root"))
+        cls.PASSWORD = str(get_secret("DB_PASSWORD", ""))
+        cls.POOL_SIZE = int(get_secret("DB_POOL_SIZE", 5))
 
     @classmethod
     def get_sqlalchemy_url(cls) -> str:
         """Returns SQLAlchemy connection URI using PyMySQL."""
+        cls.reload()
         from urllib.parse import quote_plus
         safe_pass = quote_plus(cls.PASSWORD)
         return f"mysql+pymysql://{cls.USER}:{safe_pass}@{cls.HOST}:{cls.PORT}/{cls.NAME}?charset=utf8mb4"
@@ -50,11 +59,22 @@ class DatabaseConfig:
 
 class GEEConfig:
     """Google Earth Engine configuration parameters."""
-    PROJECT_ID: str = os.getenv("GEE_PROJECT_ID", "")
-    AUTH_MODE: str = os.getenv("GEE_AUTH_MODE", "local")
+    PROJECT_ID: str = str(get_secret("GEE_PROJECT_ID", ""))
+    AUTH_MODE: str = str(get_secret("GEE_AUTH_MODE", "local"))
     COLLECTION_ID: str = "COPERNICUS/S2_SR_HARMONIZED"
     NIR_BAND: str = "B8"
     RED_BAND: str = "B4"
+
+    @classmethod
+    def reload(cls):
+        cls.PROJECT_ID = str(get_secret("GEE_PROJECT_ID", ""))
+        cls.AUTH_MODE = str(get_secret("GEE_AUTH_MODE", "local"))
+
+
+def reload_configs():
+    DatabaseConfig.reload()
+    GEEConfig.reload()
+
 
 
 class AppConfig:

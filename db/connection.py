@@ -26,6 +26,9 @@ class DatabaseManager:
         If use_database is False, connects to the server without selecting a DB
         (useful for schema creation or initialization).
         """
+        # Refresh configuration dynamically in case Streamlit Cloud secrets were updated
+        DatabaseConfig.reload()
+
         # Enable SSL automatically if connecting to a remote cloud database (e.g. TiDB Cloud)
         ssl_params = {}
         if DatabaseConfig.HOST not in ("localhost", "127.0.0.1"):
