@@ -152,6 +152,44 @@ class AnalysisRepository:
             conn.close()
 
     @staticmethod
+    def get_runs_by_area(area_id: int, limit: int = 20) -> List[Dict[str, Any]]:
+        """Retrieves completed runs for a specific study area."""
+        conn = DatabaseManager.get_raw_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT
+                        ar.analysis_id,
+                        ar.area_id,
+                        sa.area_name,
+                        sa.region_label,
+                        ar.start_date,
+                        ar.end_date,
+                        ar.max_scene_cloud_pct,
+                        ar.processing_status,
+                        ar.analysis_mode,
+                        ar.image_count,
+                        ar.composite_method,
+                        ns.mean_ndvi,
+                        ns.median_ndvi,
+                        ns.min_ndvi,
+                        ns.max_ndvi,
+                        ar.created_at
+                    FROM analysis_runs ar
+                    JOIN study_areas sa ON ar.area_id = sa.area_id
+                    LEFT JOIN ndvi_summaries ns ON ar.analysis_id = ns.analysis_id
+                    WHERE ar.area_id = %s AND ar.processing_status = 'completed'
+                    ORDER BY ar.created_at DESC, ar.analysis_id DESC
+                    LIMIT %s;
+                    """,
+                    (area_id, limit),
+                )
+                return cursor.fetchall()
+        finally:
+            conn.close()
+
+    @staticmethod
     def get_analysis_detail(analysis_id: int) -> Optional[Dict[str, Any]]:
         conn = DatabaseManager.get_raw_connection()
         try:

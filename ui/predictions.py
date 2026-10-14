@@ -53,9 +53,7 @@ def render_predictions():
         }
         chosen_run_label = st.selectbox("Reference Observation Dataset:", list(run_options.keys()), index=0)
         base_run_id = run_options[chosen_run_label]
-        detail = AnalysisRepository.get_analysis_detail(base_run_id)
-        if detail and "time_series" in detail:
-            time_series = detail["time_series"]
+        time_series = AnalysisRepository.get_time_series(base_run_id)
 
     # Tabs for the feature
     tab1, tab2, tab3, tab4 = st.tabs([
