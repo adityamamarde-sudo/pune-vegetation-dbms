@@ -358,3 +358,146 @@ class QueryDemonstrator:
                 }
         finally:
             conn.close()
+
+
+class PredictionRepository:
+    """Data access methods for prediction_scenarios and prediction_forecast_points."""
+
+    @staticmethod
+    def save_scenario(
+        area_id: int,
+        base_analysis_id: Optional[int],
+        scenario_title: str,
+        scenario_type: str,
+        forecast_horizon_months: int,
+        projected_mean_ndvi: float,
+        vegetation_loss_sq_km: float,
+        vulnerability_score: float,
+        risk_level: str,
+        simulation_parameters: Dict[str, Any],
+        forecast_points: List[Dict[str, Any]],
+    ) -> int:
+        """Atomically saves a simulated prediction scenario and its forecast points."""
+        conn = DatabaseManager.get_raw_connection()
+        try:
+            with conn.cursor() as cursor:
+                # 1. Insert scenario
+                cursor.execute(
+                    """
+                    INSERT INTO prediction_scenarios (
+                        area_id, base_analysis_id, scenario_title, scenario_type,
+                        forecast_horizon_months, projected_mean_ndvi, vegetation_loss_sq_km,
+                        vulnerability_score, risk_level, simulation_parameters
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """,
+                    (
+                        area_id,
+                        base_analysis_id,
+                        scenario_title,
+                        scenario_type,
+                        forecast_horizon_months,
+                        float(projected_mean_ndvi),
+                        float(vegetation_loss_sq_km),
+                        float(vulnerability_score),
+                        risk_level,
+                        json.dumps(simulation_parameters),
+                    ),
+                )
+                scenario_id = cursor.lastrowid
+
+                # 2. Insert forecast points
+                if forecast_points:
+                    pt_sql = """
+                    INSERT INTO prediction_forecast_points (
+                        scenario_id, forecast_date, predicted_ndvi, lower_confidence_ndvi, upper_confidence_ndvi
+                    ) VALUES (%s, %s, %s, %s, %s);
+                    """
+                    pt_values = [
+                        (
+                            scenario_id,
+                            pt["forecast_date"],
+                            float(pt.get("stressed_ndvi") or pt.get("predicted_ndvi")),
+                            float(pt.get("lower_confidence_ndvi", 0.0)),
+                            float(pt.get("upper_confidence_ndvi", 1.0)),
+                        )
+                        for pt in forecast_points
+                    ]
+                    cursor.executemany(pt_sql, pt_values)
+
+                # 3. Log into audit_logs
+                cursor.execute(
+                    """
+                    INSERT INTO audit_logs (action_type, table_name, record_id, details)
+                    VALUES ('INSERT', 'prediction_scenarios', %s, %s);
+                    """,
+                    (
+                        scenario_id,
+                        f"Saved scenario '{scenario_title}' ({scenario_type}) for Area ID: {area_id}. Risk: {risk_level}",
+                    ),
+                )
+
+                conn.commit()
+                return scenario_id
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+
+    @staticmethod
+    def get_recent_scenarios(limit: int = 30) -> List[Dict[str, Any]]:
+        """Retrieves recent simulation scenarios with area metadata."""
+        conn = DatabaseManager.get_raw_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT ps.scenario_id, ps.area_id, sa.area_name, sa.region_label,
+                           ps.scenario_title, ps.scenario_type, ps.forecast_horizon_months,
+                           ps.projected_mean_ndvi, ps.vegetation_loss_sq_km,
+                           ps.vulnerability_score, ps.risk_level, ps.created_at
+                    FROM prediction_scenarios ps
+                    JOIN study_areas sa ON ps.area_id = sa.area_id
+                    ORDER BY ps.created_at DESC
+                    LIMIT %s;
+                    """,
+                    (limit,),
+                )
+                return cursor.fetchall()
+        finally:
+            conn.close()
+
+    @staticmethod
+    def get_scenario_detail(scenario_id: int) -> Optional[Dict[str, Any]]:
+        """Fetches complete scenario metadata and its associated forecast trajectory."""
+        conn = DatabaseManager.get_raw_connection()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT ps.*, sa.area_name, sa.region_label, sa.area_sq_km, sa.geometry_geojson
+                    FROM prediction_scenarios ps
+                    JOIN study_areas sa ON ps.area_id = sa.area_id
+                    WHERE ps.scenario_id = %s;
+                    """,
+                    (scenario_id,),
+                )
+                scenario = cursor.fetchone()
+                if not scenario:
+                    return None
+
+                cursor.execute(
+                    """
+                    SELECT point_id, forecast_date, predicted_ndvi, lower_confidence_ndvi, upper_confidence_ndvi
+                    FROM prediction_forecast_points
+                    WHERE scenario_id = %s
+                    ORDER BY forecast_date ASC;
+                    """,
+                    (scenario_id,),
+                )
+                points = cursor.fetchall()
+                scenario["points"] = points
+                return scenario
+        finally:
+            conn.close()
+

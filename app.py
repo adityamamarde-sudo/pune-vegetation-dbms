@@ -55,6 +55,7 @@ from ui.area_selector import render_area_selector
 from ui.analysis_form import render_analysis_form
 from ui.ndvi_map import render_ndvi_map
 from ui.trends import render_trends
+from ui.predictions import render_predictions
 from ui.database_explorer import render_database_explorer
 from ui.about import render_about
 
@@ -94,6 +95,7 @@ def main():
             "Run NDVI Analysis",
             "NDVI Map",
             "Trends & Statistics",
+            "Key Insights & Predictions",
             "Database Explorer",
             "Literature & Methodology",
         ]
@@ -136,6 +138,8 @@ def main():
         render_ndvi_map()
     elif page == "Trends & Statistics":
         render_trends()
+    elif page == "Key Insights & Predictions":
+        render_predictions()
     elif page == "Database Explorer":
         render_database_explorer()
     elif page == "Literature & Methodology":
